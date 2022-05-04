@@ -1,0 +1,5 @@
+.DS_Store
+node_modules/
+/.idea/hello-world-javascript-action.iml
+/.idea/modules.xml
+/.idea/vcs.xml
