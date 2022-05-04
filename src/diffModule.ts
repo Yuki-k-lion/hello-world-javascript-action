@@ -3,6 +3,8 @@ import * as github from "@actions/github";
 
 type ClientType = ReturnType<typeof github.getOctokit>;
 
+
+
 export async function run() {
     const repoOwner = github.context.repo.owner;
     const repo = github.context.repo.repo;
@@ -17,6 +19,15 @@ export async function run() {
         const payload = JSON.stringify(github.context.payload, undefined, 2)
         console.log(`The event payload: ${payload}`);
 
+        // log test
+        //  https://github.com/actions/toolkit/tree/master/packages/core
+        core.startGroup('Do some function')
+        core.debug('debug log');
+        core.warning('warning log');
+        core.error('error log');
+        core.endGroup();
+
+        // diff files
         const token = core.getInput("repo-token", {required: true});
         const prNumber = getPrNumber();
 
@@ -28,19 +39,14 @@ export async function run() {
         }
 
         const client: ClientType = github.getOctokit(token);
-
         const {data: pullRequest} = await client.rest.pulls.get({
             owner: repoOwner,
             repo: repo,
             pull_number: prNumber,
         });
-
         core.debug(`fetching changed files for pr #${prNumber}`);
-
         const changedFiles: string[] = await getChangedFiles(client, prNumber, repo, repoOwner);
-
         core.debug(`fetching changed files :  #${changedFiles}`);
-
     } catch (error: any) {
         core.error(error);
         core.setFailed(error.message);
